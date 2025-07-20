@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Library</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px #eee;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: center;
+    }
+    .product {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      width: 220px;
+      padding: 16px;
+      background: #fafafa;
+      box-shadow: 0 2px 8px #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .product img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    .product-desc {
+      font-weight: 500;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .product-phone {
+      color: #888;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Product Library</h1>
+    <div class="grid">
+      <div class="product">
+        <img src="/images/sample1.jpg" alt="Product 1">
+        <div class="product-desc">Sample Product 1 Description</div>
+        <div class="product-phone">Phone: 123-456-7890</div>
+      </div>
+      <div class="product">
+        <img src="/images/sample2.jpg" alt="Product 2">
+        <div class="product-desc">Sample Product 2 Description</div>
+      </div>
+      <div class="product">
+        <img src="/images/sample3.jpg" alt="Product 3">
+        <div class="product-desc">Sample Product 3 Description</div>
+        <div class="product-phone">Phone: 555-123-4567</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 
