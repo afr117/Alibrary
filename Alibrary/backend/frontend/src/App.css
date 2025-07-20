@@ -18,9 +18,32 @@ body {
   box-shadow: 0 2px 8px #eee;
 }
 
-h1 {
-  text-align: center;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.header h1 {
+  margin: 0;
+  text-align: left;
+}
+
+.admin-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.admin-btn:hover {
+  background: #0056b3;
 }
 
 .grid {
