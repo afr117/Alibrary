@@ -7,6 +7,7 @@ function App() {
   const [showAdmin, setShowAdmin] = useState(false);
 
   useEffect(() => {
+    console.log('App component loaded - Admin button should be visible');
     // Static products data (this will be replaced by CMS data)
     const staticProducts = [
       {
@@ -57,10 +58,14 @@ function App() {
         <div className="header">
           <h1>Product Library</h1>
           <button 
-            onClick={() => setShowAdmin(true)}
+            onClick={() => {
+              console.log('Admin button clicked!');
+              setShowAdmin(true);
+            }}
             className="admin-btn"
+            style={{ backgroundColor: '#ff4444', color: 'white', padding: '10px 20px', fontSize: '16px', fontWeight: 'bold' }}
           >
-            Admin Panel
+            🔧 ADMIN PANEL
           </button>
         </div>
         <div className="grid">
