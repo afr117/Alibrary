@@ -56,16 +56,25 @@ function App() {
     <div className="App">
       <div className="container">
         <div className="header">
-          <h1>Product Library</h1>
+          <h1>Product Library - UPDATED VERSION</h1>
           <button 
             onClick={() => {
               console.log('Admin button clicked!');
               setShowAdmin(true);
             }}
             className="admin-btn"
-            style={{ backgroundColor: '#ff4444', color: 'white', padding: '10px 20px', fontSize: '16px', fontWeight: 'bold' }}
+            style={{ 
+              backgroundColor: '#ff4444', 
+              color: 'white', 
+              padding: '15px 25px', 
+              fontSize: '18px', 
+              fontWeight: 'bold',
+              border: '3px solid #000',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}
           >
-            🔧 ADMIN PANEL
+            🔧 ADMIN PANEL - CLICK HERE!
           </button>
         </div>
         <div className="grid">
