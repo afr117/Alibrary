@@ -3,17 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <title>Content Manager</title>
-    <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
   </head>
   <body>
     <script>
-      // Would need a server with GitHub API integration
-      async function saveToGitHub() {
-        const response = await fetch('/api/github/commit', {
-          method: 'POST',
-          body: JSON.stringify(products)
-        });
-        // Server would handle GitHub API calls
+      // Initialize Netlify CMS
+      if (typeof NetlifyCms !== 'undefined') {
+        NetlifyCms.init();
       }
     </script>
   </body>
