@@ -7,36 +7,54 @@ function App() {
   const [showAdmin, setShowAdmin] = useState(false);
 
   useEffect(() => {
-    console.log('App component loaded - Admin button should be visible');
-    // Static products data (this will be replaced by CMS data)
-    const staticProducts = [
-      {
-        id: 1,
-        title: "Sample Product 1",
-        description: "This is the first sample product with a detailed description.",
-        phone: "123-456-7890",
-        image: "/images/sample1.jpg",
-        order: 1
-      },
-      {
-        id: 2,
-        title: "Sample Product 2", 
-        description: "This is the second sample product with a detailed description.",
-        phone: "",
-        image: "/images/sample2.jpg",
-        order: 2
-      },
-      {
-        id: 3,
-        title: "Sample Product 3",
-        description: "This is the third sample product with a detailed description.",
-        phone: "555-123-4567",
-        image: "/images/sample3.jpg",
-        order: 3
-      }
-    ];
-
-    setProducts(staticProducts);
+    // Try to fetch products from products.json
+    fetch('/data/products.json')
+      .then((res) => {
+        if (!res.ok) throw new Error('No products.json');
+        return res.json();
+      })
+      .then((data) => {
+        // Convert to expected format for the grid
+        const formatted = data.map((p, idx) => ({
+          id: idx + 1,
+          title: p.name || p.title || `Product ${idx + 1}`,
+          description: p.description,
+          phone: p.phone,
+          image: p.image,
+          order: p.order || idx + 1
+        }));
+        setProducts(formatted);
+      })
+      .catch(() => {
+        // Fallback to static products if fetch fails
+        const staticProducts = [
+          {
+            id: 1,
+            title: "Sample Product 1",
+            description: "This is the first sample product with a detailed description.",
+            phone: "123-456-7890",
+            image: "/images/sample1.jpg",
+            order: 1
+          },
+          {
+            id: 2,
+            title: "Sample Product 2", 
+            description: "This is the second sample product with a detailed description.",
+            phone: "",
+            image: "/images/sample2.jpg",
+            order: 2
+          },
+          {
+            id: 3,
+            title: "Sample Product 3",
+            description: "This is the third sample product with a detailed description.",
+            phone: "555-123-4567",
+            image: "/images/sample3.jpg",
+            order: 3
+          }
+        ];
+        setProducts(staticProducts);
+      });
   }, []);
 
   // Placeholder images using data URLs
@@ -59,7 +77,6 @@ function App() {
           <h1>Product Library - UPDATED VERSION</h1>
           <button 
             onClick={() => {
-              console.log('Admin button clicked!');
               setShowAdmin(true);
             }}
             className="admin-btn"
@@ -95,7 +112,6 @@ function App() {
           ))}
         </div>
       </div>
-      
       {showAdmin && (
         <AdminPanel 
           products={products}
