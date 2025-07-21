@@ -197,6 +197,10 @@
       color: #0c5460;
       border: 1px solid #bee5eb;
     }
+    .loading {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -230,7 +234,7 @@
         <div class="admin-buttons">
           <button onclick="saveProduct()" class="btn btn-success">💾 Save Product</button>
           <button onclick="cancelEdit()" class="btn btn-secondary hidden" id="cancelBtn">❌ Cancel Edit</button>
-          <button onclick="saveToGitHub()" class="btn btn-warning">🚀 Save to GitHub</button>
+          <button onclick="saveToGitHub()" class="btn btn-warning" id="githubBtn">🚀 Save to GitHub</button>
         </div>
       </div>
 
@@ -247,36 +251,55 @@
   <script>
     let products = [];
     let hasUnsavedChanges = false;
+    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3001' : '';
 
-    // Load products from JSON file
+    // Load products from API
     async function loadProducts() {
       try {
-        const response = await fetch('/data/products.json');
-        if (response.ok) {
-          products = await response.json();
-        } else {
-          // Fallback to default products if file doesn't exist
-          products = [
-            {
-              name: 'Sample Product 1',
-              description: 'This is a sample product description',
-              phone: '123-456-7890',
-              image: ''
-            },
-            {
-              name: 'Sample Product 2', 
-              description: 'Another sample product description',
-              phone: '',
-              image: ''
-            },
-            {
-              name: 'Sample Product 3',
-              description: 'Third sample product description',
-              phone: '555-123-4567',
-              image: ''
-            }
-          ];
+        showStatus('Loading products...', 'info');
+        
+        // Try API first, fallback to JSON file
+        let response;
+        try {
+          response = await fetch(`${API_BASE}/api/products`);
+          if (response.ok) {
+            products = await response.json();
+            showStatus('✅ Products loaded from GitHub!', 'success');
+          } else {
+            throw new Error('API not available');
+          }
+        } catch (apiError) {
+          // Fallback to JSON file
+          response = await fetch('/data/products.json');
+          if (response.ok) {
+            products = await response.json();
+            showStatus('✅ Products loaded from local file!', 'success');
+          } else {
+            // Fallback to default products
+            products = [
+              {
+                name: 'Sample Product 1',
+                description: 'This is a sample product description',
+                phone: '123-456-7890',
+                image: ''
+              },
+              {
+                name: 'Sample Product 2', 
+                description: 'Another sample product description',
+                phone: '',
+                image: ''
+              },
+              {
+                name: 'Sample Product 3',
+                description: 'Third sample product description',
+                phone: '555-123-4567',
+                image: ''
+              }
+            ];
+            showStatus('⚠️ Using default products (no data file found)', 'info');
+          }
         }
+        
         displayProducts();
       } catch (error) {
         console.error('Error loading products:', error);
@@ -293,35 +316,57 @@
     // Save products to GitHub via API
     async function saveToGitHub() {
       try {
-        showStatus('Saving to GitHub...', 'info');
+        const githubBtn = document.getElementById('githubBtn');
+        githubBtn.classList.add('loading');
+        githubBtn.textContent = '⏳ Saving...';
         
-        // For now, we'll save to localStorage and show instructions
-        // In a real implementation, you'd need a backend API to handle GitHub commits
-        saveToLocalStorage();
+        showStatus('🚀 Saving to GitHub...', 'info');
         
-        showStatus('✅ Changes saved locally! To save to GitHub, you need to:', 'success');
-        showStatus('1. Download the updated products.json file', 'info');
-        showStatus('2. Commit and push to your GitHub repository', 'info');
+        const response = await fetch(`${API_BASE}/api/github/commit`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(products)
+        });
         
-        // Create downloadable JSON file
-        const dataStr = JSON.stringify(products, null, 2);
-        const dataBlob = new Blob([dataStr], {type: 'application/json'});
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'products.json';
-        link.textContent = '📥 Download Updated products.json';
-        link.className = 'btn btn-primary';
-        link.style.marginTop = '10px';
-        link.style.display = 'block';
+        const result = await response.json();
         
-        const statusDiv = document.getElementById('statusMessage');
-        statusDiv.appendChild(link);
+        if (result.success) {
+          showStatus(`✅ ${result.message}`, 'success');
+          hasUnsavedChanges = false;
+        } else {
+          throw new Error(result.error || 'Unknown error');
+        }
         
-        hasUnsavedChanges = false;
       } catch (error) {
         console.error('Error saving to GitHub:', error);
-        showStatus('Error saving to GitHub. Changes saved locally.', 'error');
+        
+        if (error.message.includes('GitHub token not configured')) {
+          showStatus('❌ GitHub token not configured. Please set up the backend server.', 'error');
+          showStatus('📥 Downloading updated file instead...', 'info');
+          
+          // Fallback to download
+          const dataStr = JSON.stringify(products, null, 2);
+          const dataBlob = new Blob([dataStr], {type: 'application/json'});
+          const url = URL.createObjectURL(dataBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'products.json';
+          link.textContent = '📥 Download Updated products.json';
+          link.className = 'btn btn-primary';
+          link.style.marginTop = '10px';
+          link.style.display = 'block';
+          
+          const statusDiv = document.getElementById('statusMessage');
+          statusDiv.appendChild(link);
+        } else {
+          showStatus(`❌ Error saving to GitHub: ${error.message}`, 'error');
+        }
+      } finally {
+        const githubBtn = document.getElementById('githubBtn');
+        githubBtn.classList.remove('loading');
+        githubBtn.textContent = '🚀 Save to GitHub';
       }
     }
 
@@ -460,10 +505,11 @@
       const statusDiv = document.getElementById('statusMessage');
       statusDiv.innerHTML = `<div class="status-message status-${type}">${message}</div>`;
       
-      // Clear status after 5 seconds
+      // Clear status after 8 seconds for success/info, 10 seconds for errors
+      const timeout = type === 'error' ? 10000 : 8000;
       setTimeout(() => {
         statusDiv.innerHTML = '';
-      }, 5000);
+      }, timeout);
     }
 
     // Show admin panel

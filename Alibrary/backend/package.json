@@ -1,20 +1,22 @@
 {
-  "name": "backend",
+  "name": "alibrary-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Backend server for ALibrary with GitHub API integration",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo 'Backend server - no build required'"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "bcryptjs": "^3.0.2",
+    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^2.0.2",
-    "sqlite3": "^5.1.7"
-  }
+    "@octokit/rest": "^20.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["library", "products", "github-api"],
+  "author": "ALibrary Team",
+  "license": "MIT"
 }
